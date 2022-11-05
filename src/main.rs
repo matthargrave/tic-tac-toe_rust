@@ -101,50 +101,50 @@ fn valid_move(choice: usize, board: [Tile; 9]) -> bool {
 }
 fn main() {
 
-let mut board:  [ Tile; 9] = [Tile::Vacant; 9];
+    let mut board:  [ Tile; 9] = [Tile::Vacant; 9];
 
-let mut current_player: Player = Player::X;
+    let mut current_player: Player = Player::X;
 
-let mut game_state: GameState = GameState::Ok;
+    let mut game_state: GameState = GameState::Ok;
 
-println!("Welcome to Tic Tac Toe...");
+    println!("Welcome to Tic Tac Toe...");
 
-while game_state == GameState::Ok {
-    let mut get_input = String::new();
+    while game_state == GameState::Ok {
+        let mut get_input = String::new();
+
+        dispaly_board(board);
+
+        println!("Player {}, Select Move: ", current_player.display());
+
+        io::stdin()
+            .read_line(&mut get_input)
+            .expect("Failed to read line");
+        match get_input.trim().parse::<usize>() {
+            Ok(_i) => (),
+            Err(..) => { 
+                println!("Not a valid selection");
+                continue
+            }
+        };
+        
+        let choice: usize = get_input.trim().parse::<usize>().unwrap()-1;
+
+        if valid_move(choice, board) {
+            board[choice] = Tile::Occupited(current_player);
+            game_state = check_state(board); 
+            current_player = next_player(current_player);
+        } 
+        else {
+            println!("Not a valid move, please choose again");
+        }
+    }
 
     dispaly_board(board);
 
-    println!("Player {}, Select Move: ", current_player.display());
-
-    io::stdin()
-        .read_line(&mut get_input)
-        .expect("Failed to read line");
-    match get_input.trim().parse::<usize>() {
-        Ok(_i) => (),
-        Err(..) => { 
-            println!("Not a valid selection");
-            continue
-        }
-    };
-    
-    let choice: usize = get_input.trim().parse::<usize>().unwrap()-1;
-
-    if valid_move(choice, board) {
-        board[choice] = Tile::Occupited(current_player);
-        game_state = check_state(board); 
-        current_player = next_player(current_player);
+    match game_state {
+        GameState::Win(player) => println!("Player {} Wins!", player.display()),
+        GameState::Tie => print!("Its a tie!"),
+        _ => println!("Error: You shouldn't be here"),
     } 
-    else {
-        println!("Not a valid move, please choose again");
-    }
-}
-
-dispaly_board(board);
-
-match game_state {
-    GameState::Win(player) => println!("Player {} Wins!", player.display()),
-    GameState::Tie => print!("Its a tie!"),
-    _ => println!("Error: You shouldn't be here"),
-} 
 
 }
